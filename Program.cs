@@ -4,7 +4,7 @@
     {
         public static List<TodoItem> list = new List<TodoItem>();
 
-        public const int Active = 1;
+        public const int Active = 1; //testkommentar
         public const int Waiting = 2;
         public const int Ready = 3;
         public static string StatusToString(int status)
