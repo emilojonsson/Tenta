@@ -23,14 +23,14 @@
             public int priority;
             public string task;
             public string taskDescription;
-            public TodoItem(int priority, string task) //konstruktor 1
+            public TodoItem(int priority, string task, string taskDescription) //konstruktor manuell inmatning
             {
                 this.status = Active;
                 this.priority = priority;
                 this.task = task;
-                this.taskDescription = "";
+                this.taskDescription = taskDescription;
             }
-            public TodoItem(string todoLine) //konstruktor 2
+            public TodoItem(string todoLine) //konstruktor från fil
             {
                 string[] field = todoLine.Split('|');
                 status = int.Parse(field[0]);
@@ -69,6 +69,45 @@
             }
 
         }
+        public static void AddItemToList(string subject)
+        {
+            string task;
+            if (subject != string.Empty)
+            {
+                task = subject;
+            }
+            else
+            {
+                Console.WriteLine("Uppgiftens namn: ");
+                task = Console.ReadLine();
+            }
+            Console.WriteLine("Prioritet: ");
+            int priority = int.Parse(Console.ReadLine());
+            Console.WriteLine("Beskrivning: ");
+            string taskDescription = Console.ReadLine();
+            TodoItem item = new TodoItem(priority, task, taskDescription);
+            list.Add(item);
+        }
+        public static void AmendItemToList(string subject)
+        {
+            int index = 0;
+            foreach (TodoItem items in list)
+            {
+                if (items.task == subject)
+                    index++;
+            }
+            Console.WriteLine("Ange (nytt) namn: ");
+            string task = Console.ReadLine();
+            Console.WriteLine("Ange (ny) prioritet: ");
+            int priority = int.Parse(Console.ReadLine());
+            Console.WriteLine("Ange (ny) beskrivning: ");
+            string taskDescription = Console.ReadLine();
+            TodoItem item = new TodoItem(priority, task, taskDescription);
+            list.Insert(index, item);
+            index--;
+            list.RemoveAt(index); //här tror jag det blir fel...
+        }
+
         public static bool notNullOrEmpty(string line)
         {
             return (line == null || line == string.Empty) ? false : true;
@@ -198,8 +237,15 @@
                         Todo.PrintTodoList(verbose: false, status: Todo.Ready);
                     else
                         Todo.PrintTodoList(verbose: false);
+                else if (command[0] == "ny")
+                    if (command.Length > 1)
+                        Todo.AddItemToList(command[1]);
+                    else
+                        Todo.AddItemToList("");
+                else if (command[0] == "redigera")
+                    Todo.AmendItemToList(command[1]);
                 else
-                    Console.WriteLine($"Okänt kommando: {command}");
+                    Console.WriteLine($"Okänt kommando: {command[0]}");
             }
             while (true);
             Console.WriteLine("Hej då!");

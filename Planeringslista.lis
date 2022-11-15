@@ -1,27 +1,27 @@
-3|1|Genomgång av uppgift|Läs igenom pdf och strök över 
-3|1|Kodgenomgång|Kör programmet och sätt in mig i koden/kommentera
-3|1|Planera tasks|Vilka tasks hänger ihop? Vilken ordningsföljd?
-3|1|Uppdatera "hjälp"|
-3|1|"ladda"|ladda listan todo.lis
-3|1|Menysystemet| Så det tar in framtida kommandon
+3|3|Genomgång av uppgift|Läs igenom pdf och strök över 
+3|3|Kodgenomgång|Kör programmet och sätt in mig i koden/kommentera
+3|3|Planera tasks|Vilka tasks hänger ihop? Vilken ordningsföljd?
+3|3|Uppdatera "hjälp"|
+3|3|"ladda"|ladda listan todo.lis
+3|3|Menysystemet| Så det tar in framtida kommandon
 3|2|"ladda /fil/"|ladda filen fil
-3|1|"spara"|spara uppgifterna
+3|3|"spara"|spara uppgifterna
 3|2|"spara /fil/"|spara uppgifterna på filen /fil/
-3|1|"sluta"|spara senast laddade filen och avsluta programmet!
-3|1|"beskriv"|lista alla Active uppgifter, status, prioritet, namn och beskrivning
+3|3|"sluta"|spara senast laddade filen och avsluta programmet!
+3|3|"beskriv"|lista alla Active uppgifter, status, prioritet, namn och beskrivning
 3|2|"beskriv allt"|lista alla uppgifter (oavsett status), status, prioritet, namn och beskrivning
-3|1|"lista"|lista alla Active uppgifter, status, prioritet, och namn på uppgiften
-3|1|"lista allt"|lista alla uppgifter (oavsett status), status, prioritet, och namn på uppgiften
+3|3|"lista"|lista alla Active uppgifter, status, prioritet, och namn på uppgiften
+3|3|"lista allt"|lista alla uppgifter (oavsett status), status, prioritet, och namn på uppgiften
 3|2|"lista väntande"|listar alla väntande uppgifter
 3|2|"lista klara"|listar alla klara uppgifter
-1|1|"ny"|skapa en ny uppgift
-1|2|"ny /uppgift/"|skapa en ny uppgift med namnet /uppgift/
+3|3|"ny"|skapa en ny uppgift
+3|2|"ny /uppgift/"|skapa en ny uppgift med namnet /uppgift/
 1|2|"redigera /uppgift/"|redigera en uppgift med namnet /uppgift/
 1|2|"kopiera /uppgift/"|redigera en uppgift med namnet /uppgift/ till namnet /uppgift, 2/, kopian skall ha samma prioritet, men vara Active
-1|1|"aktivera /uppgift"|sätt status på uppgift till Active
-1|1|"klar /uppgift/"|sätt status på uppgift till Ready
-1|1|"vänta /uppgift/"|sätt status på uppgift till Waiting
-2|3|Menys bredd|Fixa så att man tar hänsyn till stränglängd
-2|3|Korta ner Main|Ev byta tex if mot switch
-2|3|HeadOrFoot|Ev förenkla med genom att ta bort PrintHead + PrintFoot
-2|3|Fas 3 felhantering|Tillse att användaren ej kan krascha programmet
+1|3|"aktivera /uppgift"|sätt status på uppgift till Active
+1|3|"klar /uppgift/"|sätt status på uppgift till Ready
+1|3|"vänta /uppgift/"|sätt status på uppgift till Waiting
+2|1|Menys bredd|Fixa så att man tar hänsyn till stränglängd
+2|1|Korta ner Main|Ev byta tex if mot switch
+2|1|HeadOrFoot|Ev förenkla med genom att ta bort PrintHead + PrintFoot
+2|1|Fas 3 felhantering|Tillse att användaren ej kan krascha programmet
