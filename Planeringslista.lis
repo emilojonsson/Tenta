@@ -8,19 +8,19 @@
 3|1|"spara"|spara uppgifterna
 3|2|"spara /fil/"|spara uppgifterna på filen /fil/
 3|1|"sluta"|spara senast laddade filen och avsluta programmet!
-2|1|"beskriv"|lista alla Active uppgifter, status, prioritet, namn och beskrivning
-2|2|"beskriv allt"|lista alla uppgifter (oavsett status), status, prioritet, namn och beskrivning
-2|1|"lista"|lista alla Active uppgifter, status, prioritet, och namn på uppgiften
-2|1|"lista allt"|lista alla uppgifter (oavsett status), status, prioritet, och namn på uppgiften
-2|2|"lista väntande"|listar alla väntande uppgifter
-2|2|"lista klara"|listar alla klara uppgifter
-2|1|"ny"|skapa en ny uppgift
-2|2|"ny /uppgift/"|skapa en ny uppgift med namnet /uppgift/
-2|2|"redigera /uppgift/"|redigera en uppgift med namnet /uppgift/
-2|2|"kopiera /uppgift/"|redigera en uppgift med namnet /uppgift/ till namnet /uppgift, 2/, kopian skall ha samma prioritet, men vara Active
-2|1|"aktivera /uppgift"|sätt status på uppgift till Active
-2|1|"klar /uppgift/"|sätt status på uppgift till Ready
-2|1|"vänta /uppgift/"|sätt status på uppgift till Waiting
+3|1|"beskriv"|lista alla Active uppgifter, status, prioritet, namn och beskrivning
+3|2|"beskriv allt"|lista alla uppgifter (oavsett status), status, prioritet, namn och beskrivning
+3|1|"lista"|lista alla Active uppgifter, status, prioritet, och namn på uppgiften
+3|1|"lista allt"|lista alla uppgifter (oavsett status), status, prioritet, och namn på uppgiften
+3|2|"lista väntande"|listar alla väntande uppgifter
+3|2|"lista klara"|listar alla klara uppgifter
+1|1|"ny"|skapa en ny uppgift
+1|2|"ny /uppgift/"|skapa en ny uppgift med namnet /uppgift/
+1|2|"redigera /uppgift/"|redigera en uppgift med namnet /uppgift/
+1|2|"kopiera /uppgift/"|redigera en uppgift med namnet /uppgift/ till namnet /uppgift, 2/, kopian skall ha samma prioritet, men vara Active
+1|1|"aktivera /uppgift"|sätt status på uppgift till Active
+1|1|"klar /uppgift/"|sätt status på uppgift till Ready
+1|1|"vänta /uppgift/"|sätt status på uppgift till Waiting
 2|3|Menys bredd|Fixa så att man tar hänsyn till stränglängd
 2|3|Korta ner Main|Ev byta tex if mot switch
 2|3|HeadOrFoot|Ev förenkla med genom att ta bort PrintHead + PrintFoot

@@ -66,7 +66,7 @@
             else
             {
                 Console.WriteLine("Du kan inte spara innan du ens laddat en fil");
-            } 
+            }
 
         }
         public static bool notNullOrEmpty(string line)
@@ -78,7 +78,7 @@
             Console.Write($"Läser från fil {readFromFile} ... ");
             StreamReader sr = new StreamReader(readFromFile);
             int numRead = 0;
-            
+
             list.Clear();
             string line;
             while (notNullOrEmpty(line = sr.ReadLine()))
@@ -110,12 +110,19 @@
         {
             PrintHeadOrFoot(head: false, verbose);
         }
-        public static void PrintTodoList(bool verbose = false) //övergripande metod som skriver ut listan
+        public static void PrintTodoList(bool verbose = false, int status = 0) //övergripande metod som skriver ut listan
         {
             PrintHead(verbose);
             foreach (TodoItem item in list)
             {
-                item.Print(verbose);
+                if (status == 0)
+                {
+                    item.Print(verbose);
+                }
+                else if (item.status == status)
+                {
+                    item.Print(verbose);
+                }
             }
             PrintFoot(verbose);
         }
@@ -178,15 +185,17 @@
                     break;
                 }
                 else if (command[0] == "beskriv")
-                {
                     if (command.Length > 1)
                         Todo.PrintTodoList(verbose: true);
                     else
-                        Todo.PrintTodoList(verbose: false);
-                }
+                        Todo.PrintTodoList(verbose: true, status: Todo.Active);
                 else if (command[0] == "lista")
-                    if (command.Length > 1)
-                        Todo.PrintTodoList(verbose: true);
+                    if (command.Length < 2)
+                        Todo.PrintTodoList(verbose: false, status: Todo.Active);
+                    else if (command[1] == "väntande")
+                        Todo.PrintTodoList(verbose: false, status: Todo.Waiting);
+                    else if (command[1] == "avklarad")
+                        Todo.PrintTodoList(verbose: false, status: Todo.Ready);
                     else
                         Todo.PrintTodoList(verbose: false);
                 else
