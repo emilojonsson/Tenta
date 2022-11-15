@@ -69,15 +69,19 @@
             } 
 
         }
+        public static bool notNullOrEmpty(string line)
+        {
+            return (line == null || line == string.Empty) ? false : true;
+        }
         public static void ReadListFromFile(string readFromFile) //Läser från fil och skapar objekt till en lista
         {
             Console.Write($"Läser från fil {readFromFile} ... ");
             StreamReader sr = new StreamReader(readFromFile);
             int numRead = 0;
-
+            
             list.Clear();
             string line;
-            while ((line = sr.ReadLine()) != string.Empty)
+            while (notNullOrEmpty(line = sr.ReadLine()))
             {
                 TodoItem item = new TodoItem(line);
                 list.Add(item);
@@ -172,6 +176,13 @@
                 {
                     Todo.SaveListToFile(latestReadFile, latestReadFile);
                     break;
+                }
+                else if (command[0] == "beskriv")
+                {
+                    if (command.Length > 1)
+                        Todo.PrintTodoList(verbose: true);
+                    else
+                        Todo.PrintTodoList(verbose: false);
                 }
                 else if (command[0] == "lista")
                     if (command.Length > 1)
