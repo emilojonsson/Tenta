@@ -4,7 +4,7 @@
     {
         public static List<TodoItem> list = new List<TodoItem>();
 
-        public const int Active = 1; //testkommentar
+        public const int Active = 1;
         public const int Waiting = 2;
         public const int Ready = 3;
         public static string StatusToString(int status)
@@ -23,22 +23,22 @@
             public int priority;
             public string task;
             public string taskDescription;
-            public TodoItem(int priority, string task)
+            public TodoItem(int priority, string task) //konstruktor 1
             {
                 this.status = Active;
                 this.priority = priority;
                 this.task = task;
                 this.taskDescription = "";
             }
-            public TodoItem(string todoLine)
+            public TodoItem(string todoLine) //konstruktor 2
             {
                 string[] field = todoLine.Split('|');
-                status = Int32.Parse(field[0]);
-                priority = Int32.Parse(field[1]);
+                status = int.Parse(field[0]);
+                priority = int.Parse(field[1]);
                 task = field[2];
                 taskDescription = field[3];
             }
-            public void Print(bool verbose = false)
+            public void Print(bool verbose = false) //printar uppgifterna
             {
                 string statusString = StatusToString(status);
                 Console.Write($"|{statusString,-12}|{priority,-6}|{task,-20}|");
@@ -48,7 +48,7 @@
                     Console.WriteLine();
             }
         }
-        public static void ReadListFromFile()
+        public static void ReadListFromFile() //Läser från fil och skapar objekt till en lista
         {
             string todoFileName = "todo.lis";
             Console.Write($"Läser från fil {todoFileName} ... ");
@@ -77,15 +77,15 @@
             if (verbose) Console.WriteLine("----------------------------------------|");
             else Console.WriteLine();
         }
-        private static void PrintHead(bool verbose)
+        private static void PrintHead(bool verbose) //används bara för att särskilja på om det är head eller foot
         {
             PrintHeadOrFoot(head: true, verbose);
         }
-        private static void PrintFoot(bool verbose)
+        private static void PrintFoot(bool verbose) //används bara för att särskilja på om det är head eller foot
         {
             PrintHeadOrFoot(head: false, verbose);
         }
-        public static void PrintTodoList(bool verbose = false)
+        public static void PrintTodoList(bool verbose = false) //övergripande metod som skriver ut listan
         {
             PrintHead(verbose);
             foreach (TodoItem item in list)
