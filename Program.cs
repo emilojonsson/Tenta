@@ -48,15 +48,36 @@
                     Console.WriteLine();
             }
         }
-        public static void ReadListFromFile() //Läser från fil och skapar objekt till en lista
+        public static void SaveListToFile(string saveToFile, string latestReadFile)
         {
-            string todoFileName = "todo.lis";
-            Console.Write($"Läser från fil {todoFileName} ... ");
-            StreamReader sr = new StreamReader(todoFileName);
+            if (latestReadFile != string.Empty)
+            {
+                using (StreamWriter sw = new StreamWriter(saveToFile))
+                {
+                    int numRead = 0;
+                    foreach (TodoItem item in list)
+                    {
+                        sw.WriteLine($"{item.status}|{item.priority}|{item.task}|{item.taskDescription}");
+                        numRead++;
+                    }
+                    Console.WriteLine($"Sparar till {saveToFile} ... Sparade {numRead} uppgifter.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Du kan inte spara innan du ens laddat en fil");
+            } 
+
+        }
+        public static void ReadListFromFile(string readFromFile) //Läser från fil och skapar objekt till en lista
+        {
+            Console.Write($"Läser från fil {readFromFile} ... ");
+            StreamReader sr = new StreamReader(readFromFile);
             int numRead = 0;
 
+            list.Clear();
             string line;
-            while ((line = sr.ReadLine()) != null)
+            while ((line = sr.ReadLine()) != string.Empty)
             {
                 TodoItem item = new TodoItem(line);
                 list.Add(item);
@@ -97,9 +118,25 @@
         public static void PrintHelp()
         {
             Console.WriteLine("Kommandon:");
-            Console.WriteLine("hjälp    lista denna hjälp");
-            Console.WriteLine("lista    lista att-göra-listan");
-            Console.WriteLine("sluta    spara att-göra-listan och sluta");
+            Console.WriteLine("hjälp                lista denna hjälp");
+            Console.WriteLine("ladda                ladda listan todo.lis");
+            Console.WriteLine("ladda /fil/          ladda filen fil");
+            Console.WriteLine("spara                spara uppgifterna");
+            Console.WriteLine("spara /fil/          spara uppgifterna på filen /fil/");
+            Console.WriteLine("sluta                spara senast laddade filen och avsluta programmet!");
+            Console.WriteLine("beskriv              lista alla Active uppgifter, status, prioritet, namn och beskrivning");
+            Console.WriteLine("beskriv allt         lista alla uppgifter (oavsett status), status, prioritet, namn och beskrivning");
+            Console.WriteLine("lista                lista alla Active uppgifter, status, prioritet, och namn på uppgiften");
+            Console.WriteLine("lista allt           lista alla uppgifter (oavsett status), status, prioritet, och namn på uppgiften");
+            Console.WriteLine("lista väntande       listar alla väntande uppgifter");
+            Console.WriteLine("lista klara          listar alla klara uppgifter");
+            Console.WriteLine("ny                   skapa en ny uppgift");
+            Console.WriteLine("ny /uppgift          skapa en ny uppgift med namnet /uppgift/");
+            Console.WriteLine("redigera /uppgift/   redigera en uppgift med namnet /uppgift/");
+            Console.WriteLine("kopiera /uppgift/    redigera en uppgift med namnet /uppgift/ till namnet /uppgift, 2/, kopian skall ha samma prioritet, men vara Active");
+            Console.WriteLine("aktivera /uppgift    sätt status på uppgift till Active");
+            Console.WriteLine("klar /uppgift/       sätt status på uppgift till Ready");
+            Console.WriteLine("vänta /uppgift/      sätt status på uppgift till Waiting");
         }
     }
     class MainClass
@@ -107,42 +144,54 @@
         public static void Main(string[] args)
         {
             Console.WriteLine("Välkommen till att-göra-listan!");
-            Todo.ReadListFromFile();
             Todo.PrintHelp();
-            string command;
+            string[] command;
+            string latestReadFile = string.Empty;
             do
             {
                 command = MyIO.ReadCommand("> ");
-                if (MyIO.Equals(command, "hjälp"))
-                {
+                if (command[0] == "hjälp")
                     Todo.PrintHelp();
-                }
-                else if (MyIO.Equals(command, "sluta"))
+                else if (command[0] == "ladda")
+                    if (command.Length > 1)
+                    {
+                        Todo.ReadListFromFile(command[1]);
+                        latestReadFile = command[1];
+                    }
+                    else
+                    {
+                        Todo.ReadListFromFile("todo.lis");
+                        latestReadFile = "todo.lis";
+                    }
+                else if (command[0] == "spara")
+                    if (command.Length > 1)
+                        Todo.SaveListToFile(command[1], latestReadFile);
+                    else
+                        Todo.SaveListToFile("todo.lis", latestReadFile);
+                else if (command[0] == "sluta")
                 {
-                    Console.WriteLine("Hej då!");
+                    Todo.SaveListToFile(latestReadFile, latestReadFile);
                     break;
                 }
-                else if (MyIO.Equals(command, "lista"))
-                {
-                    if (MyIO.HasArgument(command, "allt"))
+                else if (command[0] == "lista")
+                    if (command.Length > 1)
                         Todo.PrintTodoList(verbose: true);
                     else
                         Todo.PrintTodoList(verbose: false);
-                }
                 else
-                {
                     Console.WriteLine($"Okänt kommando: {command}");
-                }
             }
             while (true);
+            Console.WriteLine("Hej då!");
         }
     }
     class MyIO
     {
-        static public string ReadCommand(string prompt)
+        static public string[] ReadCommand(string prompt)
         {
             Console.Write(prompt);
-            return Console.ReadLine();
+            string[] command = Console.ReadLine().Split(" ");
+            return command;
         }
         static public bool Equals(string rawCommand, string expected)
         {
