@@ -109,13 +109,13 @@
             list.Insert(index, item);
             list.RemoveAt(index + 1);
         }
-        public static void CopyItemInList(string[] subject)
+        public static void CopyItemInList(string[] command)
         {
-            string command = string.Join(" ", subject.Skip(1));
+            string temp = string.Join(" ", command.Skip(1));
             int index = 0;
             foreach (TodoItem items in list)
             {
-                if (items.task == command)
+                if (items.task == temp)
                     break;
                 index++;
             }
@@ -125,7 +125,23 @@
             TodoItem item = new TodoItem(priority, task, taskDescription);
             list.Insert(index + 1, item);
         }
-
+        public static void ChangeStatus(string[] command)
+        {
+            string temp = string.Join(" ", command.Skip(1));
+            int index = 0;
+            foreach (TodoItem items in list)
+            {
+                if (items.task == temp)
+                    break;
+                index++;
+            }
+            if (command[0] == "aktivera")
+                list[index].status = Todo.Active;
+            else if (command[0] == "klar")
+                list[index].status = Todo.Ready;
+            else
+                list[index].status = Todo.Waiting;
+        }
         public static bool notNullOrEmpty(string line)
         {
             return (line == null || line == string.Empty) ? false : true;
@@ -199,10 +215,10 @@
             Console.WriteLine("lista väntande       listar alla väntande uppgifter");
             Console.WriteLine("lista klara          listar alla klara uppgifter");
             Console.WriteLine("ny                   skapa en ny uppgift");
-            Console.WriteLine("ny /uppgift          skapa en ny uppgift med namnet /uppgift/");
+            Console.WriteLine("ny /uppgift/         skapa en ny uppgift med namnet /uppgift/");
             Console.WriteLine("redigera /uppgift/   redigera en uppgift med namnet /uppgift/");
             Console.WriteLine("kopiera /uppgift/    redigera en uppgift med namnet /uppgift/ till namnet /uppgift, 2/, kopian skall ha samma prioritet, men vara Active");
-            Console.WriteLine("aktivera /uppgift    sätt status på uppgift till Active");
+            Console.WriteLine("aktivera /uppgift/   sätt status på uppgift till Active");
             Console.WriteLine("klar /uppgift/       sätt status på uppgift till Ready");
             Console.WriteLine("vänta /uppgift/      sätt status på uppgift till Waiting");
         }
@@ -264,6 +280,8 @@
                     Todo.AmendItemToList(command);
                 else if (command[0] == "kopiera")
                     Todo.CopyItemInList(command);
+                else if (command[0] == "aktivera" || command[0] == "klar" || command[0] == "vänta")
+                    Todo.ChangeStatus(command);
                 else
                     Console.WriteLine($"Okänt kommando: {string.Join(" ", command)}");
             }
