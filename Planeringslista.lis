@@ -29,6 +29,6 @@
 3|2|Se över vad som är private/public
 2|3|HeadOrFoot|Ev förenkla med genom att ta bort PrintHead + PrintFoot
 2|2|Dubbelkolla utfall av alla användarfall
-2|2|Gå igenom parameternamn
-2|2|Allmän tillsnyggning 
+3|2|Gå igenom parameternamn
+3|2|Allmän tillsnyggning 
 2|3|Fas 3 felhantering|Tillse att användaren ej kan krascha programmet
