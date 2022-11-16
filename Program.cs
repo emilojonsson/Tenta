@@ -2,7 +2,7 @@
 {
     public class Todo
     {
-        public static List<TodoItem> list = new List<TodoItem>();
+        public static List<TodoItem> listOfObjects = new List<TodoItem>();
 
         public const int Active = 1;
         public const int Waiting = 2;
@@ -23,14 +23,14 @@
             public int priority;
             public string task;
             public string taskDescription;
-            public TodoItem(int priority, string task, string taskDescription) //konstruktor manuell inmatning
+            public TodoItem(int priority, string task, string taskDescription)
             {
                 this.status = Active;
                 this.priority = priority;
                 this.task = task;
                 this.taskDescription = taskDescription;
             }
-            public TodoItem(string todoLine) //konstruktor från fil
+            public TodoItem(string todoLine)
             {
                 string[] field = todoLine.Split('|');
                 status = int.Parse(field[0]);
@@ -38,7 +38,7 @@
                 task = field[2];
                 taskDescription = field[3];
             }
-            public void Print(bool verbose = false) //printar uppgifterna
+            public void Print(bool verbose = false)
             {
                 string statusString = StatusToString(status);
                 Console.Write($"|{statusString,-12}|{priority,-6}|{task,-20}|");
@@ -48,92 +48,100 @@
                     Console.WriteLine();
             }
         }
-        public static void ReadListFromFile(string readFromFile) //Läser från fil och skapar objekt till en lista
+        public static void ReadListFromFile(string fileName)
         {
-            Console.Write($"Läser från fil {readFromFile} ... ");
-            list.Clear();
-            using (StreamReader sr = new StreamReader(readFromFile))
+            Console.Write($"Läser från fil {fileName} ... ");
+            listOfObjects.Clear();
+            using (StreamReader sr = new StreamReader(fileName))
             {
-                int numRead = 0;
+                int index = 0;
                 string line;
                 while (notNullOrEmpty(line = sr.ReadLine()))
                 {
                     TodoItem item = new TodoItem(line);
-                    list.Add(item);
-                    numRead++;
+                    listOfObjects.Add(item);
+                    index++;
                 }
-                Console.WriteLine($"Läste {numRead} rader.");
+                Console.WriteLine($"Läste {index} rader.");
             }
         }
-        public static void SaveListToFile(string saveToFile, string latestReadFile)
+        private static bool notNullOrEmpty(string line)
         {
-            if (latestReadFile != string.Empty)
+            return (line == null || line == string.Empty) ? false : true;
+        }
+        public static void SaveListToFile(string[] command, string LastReadFile)
+        {
+            if (LastReadFile != string.Empty)
             {
-                using (StreamWriter sw = new StreamWriter(saveToFile))
-                {
-                    int numRead = 0;
-                    foreach (TodoItem item in list)
+                string fileName;
+                if (command.Length < 2)
+                    fileName = LastReadFile;
+                else
+                    fileName = command[1];
+                    using (StreamWriter sw = new StreamWriter(fileName))
                     {
-                        sw.WriteLine($"{item.status}|{item.priority}|{item.task}|{item.taskDescription}");
-                        numRead++;
+                        int index = 0;
+                        foreach (TodoItem item in listOfObjects)
+                        {
+                            sw.WriteLine($"{item.status}|{item.priority}|{item.task}|{item.taskDescription}");
+                            index++;
+                        }
+                        Console.WriteLine($"Sparar till {fileName} ... Sparade {index} uppgifter.");
                     }
-                    Console.WriteLine($"Sparar till {saveToFile} ... Sparade {numRead} uppgifter.");
-                }
             }
-            else
+            else if (command[0] == "spara")
                 Console.WriteLine("Du kan inte spara innan du ens laddat en fil");
-        }
-        public static void AddItemToList(string subject)
-        {
-            string task;
-            if (subject != string.Empty)
-            {
-                task = subject;
-            }
-            else
-            {
-                Console.WriteLine("Uppgiftens namn: ");
-                task = Console.ReadLine();
-            }
-            Console.WriteLine("Prioritet: ");
-            int priority = int.Parse(Console.ReadLine());
-            Console.WriteLine("Beskrivning: ");
-            string taskDescription = Console.ReadLine();
-            TodoItem item = new TodoItem(priority, task, taskDescription);
-            list.Add(item);
         }
         public static void AmendItemInList(string[] command)
         {
             int index = IndexInList(command);
-            SetTaskPriorityDescriptionFromConsole(out string task, out int priority, out string taskDescription);
+            SetTaskPriorityDescriptionFromConsole(taskInCommand: true, out string task, out int priority, out string taskDescription);
             TodoItem amendedItem = new TodoItem(priority, task, taskDescription);
-            amendedItem.status = list[index].status;
-            list.Insert(index, amendedItem);
-            list.RemoveAt(index + 1);
+            amendedItem.status = listOfObjects[index].status;
+            listOfObjects.Insert(index, amendedItem);
+            listOfObjects.RemoveAt(index + 1);
         }
         public static void CopyItemInList(string[] command)
         {
             int index = IndexInList(command);
-            int priority = list[index].priority;
-            string task = list[index].task + ", 2";
-            string taskDescription = list[index].taskDescription;
+            int priority = listOfObjects[index].priority;
+            string task = listOfObjects[index].task + ", 2";
+            string taskDescription = listOfObjects[index].taskDescription;
             TodoItem item = new TodoItem(priority, task, taskDescription);
-            list.Insert(index + 1, item);
+            listOfObjects.Insert(index + 1, item);
         }
-        private static void SetTaskPriorityDescriptionFromConsole(out string task, out int priority, out string taskDescription)
+        public static void AddItemToList(string[] command)
         {
-            Console.WriteLine("Ange (nytt) namn: ");
-            task = Console.ReadLine();
-            Console.WriteLine("Ange (ny) prioritet: ");
+            bool taskInCommand;
+            string temp = string.Join(" ", command.Skip(1));
+            if (command.Length < 2)
+                taskInCommand = false;
+            else
+                taskInCommand = true;
+            SetTaskPriorityDescriptionFromConsole(taskInCommand, out string task, out int priority, out string taskDescription);
+            if (taskInCommand)
+                task = temp;
+            TodoItem item = new TodoItem(priority, task, taskDescription);
+            listOfObjects.Add(item);
+        }
+        private static void SetTaskPriorityDescriptionFromConsole(bool taskInCommand, out string task, out int priority, out string taskDescription)
+        {
+            task = string.Empty;
+            if (!taskInCommand)
+            {
+                Console.WriteLine("Ange namn: ");
+                task = Console.ReadLine();
+            }
+            Console.WriteLine("Ange prioritet: ");
             priority = int.Parse(Console.ReadLine());
-            Console.WriteLine("Ange (ny) beskrivning: ");
+            Console.WriteLine("Ange beskrivning: ");
             taskDescription = Console.ReadLine();
         }
         private static int IndexInList(string[] command)
         {
             string temp = string.Join(" ", command.Skip(1));
             int index = 0;
-            foreach (TodoItem items in list)
+            foreach (TodoItem items in listOfObjects)
             {
                 if (items.task == temp)
                     break;
@@ -145,15 +153,35 @@
         {
             int index = IndexInList(command);
             if (command[0] == "aktivera")
-                list[index].status = Todo.Active;
+                listOfObjects[index].status = Todo.Active;
             else if (command[0] == "klar")
-                list[index].status = Todo.Ready;
+                listOfObjects[index].status = Todo.Ready;
             else
-                list[index].status = Todo.Waiting;
+                listOfObjects[index].status = Todo.Waiting;
         }
-        public static bool notNullOrEmpty(string line)
+        public static void PrintTodoList(bool verbose = false, int status = 0)
         {
-            return (line == null || line == string.Empty) ? false : true;
+            PrintHead(verbose);
+            foreach (TodoItem item in listOfObjects)
+            {
+                if (status == 0)
+                {
+                    item.Print(verbose);
+                }
+                else if (item.status == status)
+                {
+                    item.Print(verbose);
+                }
+            }
+            PrintFoot(verbose);
+        }
+        private static void PrintHead(bool verbose)
+        {
+            PrintHeadOrFoot(head: true, verbose);
+        }
+        private static void PrintFoot(bool verbose)
+        {
+            PrintHeadOrFoot(head: false, verbose);
         }
         private static void PrintHeadOrFoot(bool head, bool verbose)
         {
@@ -166,30 +194,6 @@
             Console.Write("|------------|------|--------------------|");
             if (verbose) Console.WriteLine("----------------------------------------|");
             else Console.WriteLine();
-        }
-        private static void PrintHead(bool verbose) //används bara för att särskilja på om det är head eller foot
-        {
-            PrintHeadOrFoot(head: true, verbose);
-        }
-        private static void PrintFoot(bool verbose) //används bara för att särskilja på om det är head eller foot
-        {
-            PrintHeadOrFoot(head: false, verbose);
-        }
-        public static void PrintTodoList(bool verbose = false, int status = 0) //övergripande metod som skriver ut listan
-        {
-            PrintHead(verbose);
-            foreach (TodoItem item in list)
-            {
-                if (status == 0)
-                {
-                    item.Print(verbose);
-                }
-                else if (item.status == status)
-                {
-                    item.Print(verbose);
-                }
-            }
-            PrintFoot(verbose);
         }
         public static void PrintHelp()
         {
@@ -222,7 +226,7 @@
             Console.WriteLine("Välkommen till att-göra-listan!");
             Todo.PrintHelp();
             string[] command;
-            string latestReadFile = string.Empty;
+            string LastReadFile = string.Empty;
             do
             {
                 command = MyIO.ReadCommand("> ");
@@ -232,21 +236,18 @@
                     if (command.Length > 1)
                     {
                         Todo.ReadListFromFile(command[1]);
-                        latestReadFile = command[1];
+                        LastReadFile = command[1];
                     }
                     else
                     {
                         Todo.ReadListFromFile("todo.lis");
-                        latestReadFile = "todo.lis";
+                        LastReadFile = "todo.lis";
                     }
                 else if (command[0] == "spara")
-                    if (command.Length > 1)
-                        Todo.SaveListToFile(command[1], latestReadFile);
-                    else
-                        Todo.SaveListToFile("todo.lis", latestReadFile);
+                    Todo.SaveListToFile(command, LastReadFile);
                 else if (command[0] == "sluta")
                 {
-                    Todo.SaveListToFile(latestReadFile, latestReadFile);
+                    Todo.SaveListToFile(command, LastReadFile);
                     break;
                 }
                 else if (command[0] == "beskriv")
@@ -264,10 +265,7 @@
                     else
                         Todo.PrintTodoList(verbose: false);
                 else if (command[0] == "ny")
-                    if (command.Length > 1)
-                        Todo.AddItemToList(command[1]);
-                    else
-                        Todo.AddItemToList("");
+                    Todo.AddItemToList(command);
                 else if (command[0] == "redigera")
                     Todo.AmendItemInList(command);
                 else if (command[0] == "kopiera")
@@ -281,9 +279,9 @@
             Console.WriteLine("Hej då!");
         }
     }
-    class MyIO
+    public class MyIO
     {
-        static public string[] ReadCommand(string prompt)
+        public static string[] ReadCommand(string prompt) //kanske lägga tillbaka till egen klass
         {
             Console.Write(prompt);
             string[] command = Console.ReadLine().Trim().Split(" ");
