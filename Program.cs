@@ -88,13 +88,15 @@
             TodoItem item = new TodoItem(priority, task, taskDescription);
             list.Add(item);
         }
-        public static void AmendItemToList(string subject)
+        public static void AmendItemToList(string[] subject)
         {
+            string command = string.Join(" ", subject.Skip(1));
             int index = 0;
             foreach (TodoItem items in list)
             {
-                if (items.task == subject)
-                    index++;
+                if (items.task == command)
+                    break;
+                index++;
             }
             Console.WriteLine("Ange (nytt) namn: ");
             string task = Console.ReadLine();
@@ -103,9 +105,25 @@
             Console.WriteLine("Ange (ny) beskrivning: ");
             string taskDescription = Console.ReadLine();
             TodoItem item = new TodoItem(priority, task, taskDescription);
+            item.status = list[index].status;
             list.Insert(index, item);
-            index--;
-            list.RemoveAt(index); //här tror jag det blir fel...
+            list.RemoveAt(index + 1);
+        }
+        public static void CopyItemInList(string[] subject)
+        {
+            string command = string.Join(" ", subject.Skip(1));
+            int index = 0;
+            foreach (TodoItem items in list)
+            {
+                if (items.task == command)
+                    break;
+                index++;
+            }
+            int priority = list[index].priority;
+            string task = list[index].task + ", 2";
+            string taskDescription = list[index].taskDescription;
+            TodoItem item = new TodoItem(priority, task, taskDescription);
+            list.Insert(index + 1, item);
         }
 
         public static bool notNullOrEmpty(string line)
@@ -243,9 +261,11 @@
                     else
                         Todo.AddItemToList("");
                 else if (command[0] == "redigera")
-                    Todo.AmendItemToList(command[1]);
+                    Todo.AmendItemToList(command);
+                else if (command[0] == "kopiera")
+                    Todo.CopyItemInList(command);
                 else
-                    Console.WriteLine($"Okänt kommando: {command[0]}");
+                    Console.WriteLine($"Okänt kommando: {string.Join(" ", command)}");
             }
             while (true);
             Console.WriteLine("Hej då!");
@@ -256,7 +276,7 @@
         static public string[] ReadCommand(string prompt)
         {
             Console.Write(prompt);
-            string[] command = Console.ReadLine().Split(" ");
+            string[] command = Console.ReadLine().Trim().Split(" ");
             return command;
         }
         static public bool Equals(string rawCommand, string expected)
