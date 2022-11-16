@@ -22,11 +22,13 @@
 3|1|"klar /uppgift/"|sätt status på uppgift till Ready
 3|1|"vänta /uppgift/"|sätt status på uppgift till Waiting
 2|3|Menys bredd|Fixa så att man tar hänsyn till stränglängd
-2|3|Korta ner Main|Ev byta tex if mot switch, eller få in metodanrop
+3|3|Korta ner Main|Ev byta tex if mot switch, eller få in metodanrop
 3|2|Gör en metod av hitta index för objekt i listan
 3|2|Slå ihop kod från metoderna Amend och Copy to List
 3|2|Kan jag rensa bort hela MyIO-klassen. Nej, ha kvar!
 3|2|Se över vad som är private/public
 2|3|HeadOrFoot|Ev förenkla med genom att ta bort PrintHead + PrintFoot
-2|2|Efter ihopslagning av kod, gå igenom parameternamn
+2|2|Dubbelkolla utfall av alla användarfall
+2|2|Gå igenom parameternamn
+2|2|Allmän tillsnyggning 
 2|3|Fas 3 felhantering|Tillse att användaren ej kan krascha programmet
