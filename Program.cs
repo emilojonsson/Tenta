@@ -48,6 +48,23 @@
                     Console.WriteLine();
             }
         }
+        public static void ReadListFromFile(string readFromFile) //Läser från fil och skapar objekt till en lista
+        {
+            Console.Write($"Läser från fil {readFromFile} ... ");
+            list.Clear();
+            using (StreamReader sr = new StreamReader(readFromFile))
+            {
+                int numRead = 0;
+                string line;
+                while (notNullOrEmpty(line = sr.ReadLine()))
+                {
+                    TodoItem item = new TodoItem(line);
+                    list.Add(item);
+                    numRead++;
+                }
+                Console.WriteLine($"Läste {numRead} rader.");
+            }
+        }
         public static void SaveListToFile(string saveToFile, string latestReadFile)
         {
             if (latestReadFile != string.Empty)
@@ -64,10 +81,7 @@
                 }
             }
             else
-            {
                 Console.WriteLine("Du kan inte spara innan du ens laddat en fil");
-            }
-
         }
         public static void AddItemToList(string subject)
         {
@@ -88,44 +102,34 @@
             TodoItem item = new TodoItem(priority, task, taskDescription);
             list.Add(item);
         }
-        public static void AmendItemToList(string[] subject)
+        public static void AmendItemInList(string[] command)
         {
-            string command = string.Join(" ", subject.Skip(1));
-            int index = 0;
-            foreach (TodoItem items in list)
-            {
-                if (items.task == command)
-                    break;
-                index++;
-            }
-            Console.WriteLine("Ange (nytt) namn: ");
-            string task = Console.ReadLine();
-            Console.WriteLine("Ange (ny) prioritet: ");
-            int priority = int.Parse(Console.ReadLine());
-            Console.WriteLine("Ange (ny) beskrivning: ");
-            string taskDescription = Console.ReadLine();
-            TodoItem item = new TodoItem(priority, task, taskDescription);
-            item.status = list[index].status;
-            list.Insert(index, item);
+            int index = IndexInList(command);
+            SetTaskPriorityDescriptionFromConsole(out string task, out int priority, out string taskDescription);
+            TodoItem amendedItem = new TodoItem(priority, task, taskDescription);
+            amendedItem.status = list[index].status;
+            list.Insert(index, amendedItem);
             list.RemoveAt(index + 1);
         }
         public static void CopyItemInList(string[] command)
         {
-            string temp = string.Join(" ", command.Skip(1));
-            int index = 0;
-            foreach (TodoItem items in list)
-            {
-                if (items.task == temp)
-                    break;
-                index++;
-            }
+            int index = IndexInList(command);
             int priority = list[index].priority;
             string task = list[index].task + ", 2";
             string taskDescription = list[index].taskDescription;
             TodoItem item = new TodoItem(priority, task, taskDescription);
             list.Insert(index + 1, item);
         }
-        public static void ChangeStatus(string[] command)
+        private static void SetTaskPriorityDescriptionFromConsole(out string task, out int priority, out string taskDescription)
+        {
+            Console.WriteLine("Ange (nytt) namn: ");
+            task = Console.ReadLine();
+            Console.WriteLine("Ange (ny) prioritet: ");
+            priority = int.Parse(Console.ReadLine());
+            Console.WriteLine("Ange (ny) beskrivning: ");
+            taskDescription = Console.ReadLine();
+        }
+        private static int IndexInList(string[] command)
         {
             string temp = string.Join(" ", command.Skip(1));
             int index = 0;
@@ -135,6 +139,11 @@
                     break;
                 index++;
             }
+            return index;
+        }
+        public static void ChangeStatus(string[] command)
+        {
+            int index = IndexInList(command);
             if (command[0] == "aktivera")
                 list[index].status = Todo.Active;
             else if (command[0] == "klar")
@@ -145,23 +154,6 @@
         public static bool notNullOrEmpty(string line)
         {
             return (line == null || line == string.Empty) ? false : true;
-        }
-        public static void ReadListFromFile(string readFromFile) //Läser från fil och skapar objekt till en lista
-        {
-            Console.Write($"Läser från fil {readFromFile} ... ");
-            StreamReader sr = new StreamReader(readFromFile);
-            int numRead = 0;
-
-            list.Clear();
-            string line;
-            while (notNullOrEmpty(line = sr.ReadLine()))
-            {
-                TodoItem item = new TodoItem(line);
-                list.Add(item);
-                numRead++;
-            }
-            sr.Close();
-            Console.WriteLine($"Läste {numRead} rader.");
         }
         private static void PrintHeadOrFoot(bool head, bool verbose)
         {
@@ -277,7 +269,7 @@
                     else
                         Todo.AddItemToList("");
                 else if (command[0] == "redigera")
-                    Todo.AmendItemToList(command);
+                    Todo.AmendItemInList(command);
                 else if (command[0] == "kopiera")
                     Todo.CopyItemInList(command);
                 else if (command[0] == "aktivera" || command[0] == "klar" || command[0] == "vänta")
@@ -296,29 +288,6 @@
             Console.Write(prompt);
             string[] command = Console.ReadLine().Trim().Split(" ");
             return command;
-        }
-        static public bool Equals(string rawCommand, string expected)
-        {
-            string command = rawCommand.Trim();
-            if (command == "") return false;
-            else
-            {
-                string[] cwords = command.Split(' ');
-                if (cwords[0] == expected) return true;
-            }
-            return false;
-        }
-        static public bool HasArgument(string rawCommand, string expected)
-        {
-            string command = rawCommand.Trim();
-            if (command == "") return false;
-            else
-            {
-                string[] cwords = command.Split(' ');
-                if (cwords.Length < 2) return false;
-                if (cwords[1] == expected) return true;
-            }
-            return false;
         }
     }
 }
