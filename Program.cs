@@ -2,11 +2,11 @@
 {
     public class Todo
     {
-        public static List<TodoItem> listOfObjects = new List<TodoItem>();
+        private static List<TodoItem> listOfObjects = new List<TodoItem>();
 
-        public const int Active = 1;
-        public const int Waiting = 2;
-        public const int Ready = 3;
+        private const int Active = 1;
+        private const int Waiting = 2;
+        private const int Ready = 3;
         public static string StatusToString(int status)
         {
             switch (status)
@@ -61,7 +61,7 @@
             {
                 int index = 0;
                 string line;
-                while (NotNullOrEmpty(line = sr.ReadLine()))
+                while (!IsNullOrEmpty(line = sr.ReadLine()))
                 {
                     TodoItem item = new TodoItem(line);
                     listOfObjects.Add(item);
@@ -70,9 +70,9 @@
                 Console.WriteLine($"Läste {index} rader.");
             }
         }
-        private static bool NotNullOrEmpty(string line)
+        private static bool IsNullOrEmpty(string line)
         {
-            return (line == null || line == string.Empty) ? false : true;
+            return (line == null || line == string.Empty);
         }
         public static void SaveListToFile(string[] command, string LastReadFile)
         {
@@ -100,32 +100,42 @@
         public static void EditItemInList(string[] command)
         {
             int index = IndexInList(command);
-            SetTaskPrioDescFromConsole(taskInCommand: false, out string task, out int priority, out string taskDescription);
-            TodoItem amendedItem = new TodoItem(priority, task, taskDescription);
-            amendedItem.status = listOfObjects[index].status;
-            listOfObjects.Insert(index, amendedItem);
-            listOfObjects.RemoveAt(index + 1);
+            if (index != -1)
+            {
+                SetTaskPrioDescFromConsole(taskInCommand: false, out string task, out int priority, out string taskDescription);
+                TodoItem amendedItem = new TodoItem(priority, task, taskDescription);
+                amendedItem.status = listOfObjects[index].status;
+                listOfObjects.Insert(index, amendedItem);
+                listOfObjects.RemoveAt(index + 1);
+            }
+            else
+                Console.WriteLine("Uppgiften finns inte i listan");
         }
         public static void CopyItemInList(string[] command)
         {
             int index = IndexInList(command);
-            int priority = listOfObjects[index].priority;
-            string task = listOfObjects[index].task + ", 2";
-            string taskDescription = listOfObjects[index].taskDescription;
-            TodoItem item = new TodoItem(priority, task, taskDescription);
-            listOfObjects.Insert(index + 1, item);
+            if (index != -1)
+            {
+                int priority = listOfObjects[index].priority;
+                string task = listOfObjects[index].task + ", 2";
+                string taskDescription = listOfObjects[index].taskDescription;
+                TodoItem item = new TodoItem(priority, task, taskDescription);
+                listOfObjects.Insert(index + 1, item);
+            }
+            else
+                Console.WriteLine("Uppgiften finns inte i listan");
         }
         public static void AddItemToList(string[] command)
         {
             bool taskInCommand;
-            string tempString = string.Join(" ", command.Skip(1));
+            string taskName = string.Join(" ", command.Skip(1));
             if (command.Length < 2)
                 taskInCommand = false;
             else
                 taskInCommand = true;
             SetTaskPrioDescFromConsole(taskInCommand, out string task, out int priority, out string taskDescription);
             if (taskInCommand)
-                task = tempString;
+                task = taskName;
             TodoItem item = new TodoItem(priority, task, taskDescription);
             listOfObjects.Add(item);
         }
@@ -144,50 +154,70 @@
         }
         private static int IndexInList(string[] command)
         {
-            string tempString = string.Join(" ", command.Skip(1));
+            string taskName = string.Join(" ", command.Skip(1));
             int index = 0;
+            bool itemFound = false;
             foreach (TodoItem items in listOfObjects)
             {
-                if (items.task == tempString)
+                if (items.task == taskName)
+                {
+                    itemFound = true;
                     break;
+                }
                 index++;
             }
+            if (!itemFound)
+                index = -1;
             return index;
         }
         public static void ChangeStatus(string[] command)
         {
             int index = IndexInList(command);
-            switch (command[0])
+            try
             {
-                case "aktivera": listOfObjects[index].status = Active; break;
-                case "klar": listOfObjects[index].status = Ready; break;
-                default: listOfObjects[index].status = Waiting; break;
+                switch (command[0])
+                {
+                    case "aktivera": listOfObjects[index].status = Active; break;
+                    case "klar": listOfObjects[index].status = Ready; break;
+                    default: listOfObjects[index].status = Waiting; break;
+                }
+            }
+            catch (System.ArgumentOutOfRangeException)
+            {
+                Console.WriteLine($"Kommandot ej korrekt skrivet tillsammans med uppgift från listan.");
             }
         }
         public static void PrintTodoList(bool verbose, string[] command)
         {
-            string tempString = string.Join(" ", command);
-            int status = 0;
-            switch (tempString)
+            string commandString = string.Join(" ", command);
+            int status = -1;
+            switch (commandString)
             {
                 case "lista": status = Active; break;
                 case "beskriv": status = Active; break;
                 case "lista väntande": status = Waiting; break;
                 case "lista klara": status = Ready; break;
+                case "lista allt": status = 0; break;
+                case "beskriv allt": status = 0; break;
             }
-            PrintHead(verbose);
-            foreach (TodoItem item in listOfObjects)
+            if (status != -1)
             {
-                if (status == 0)
+                PrintHead(verbose);
+                foreach (TodoItem item in listOfObjects)
                 {
-                    item.Print(verbose);
+                    if (status == 0)
+                    {
+                        item.Print(verbose);
+                    }
+                    else if (item.status == status)
+                    {
+                        item.Print(verbose);
+                    }
                 }
-                else if (item.status == status)
-                {
-                    item.Print(verbose);
-                }
+                PrintFoot(verbose);
             }
-            PrintFoot(verbose);
+            else
+                Console.WriteLine($"Okänt kommando: {string.Join(" ", command)}");
         }
         private static void PrintHead(bool verbose)
         {
@@ -233,18 +263,15 @@
             Console.WriteLine("vänta /uppgift/      sätt status på uppgift till Waiting");
         }
     }
-    public class MyIO
+    class MainClass
     {
-        public static string[] ReadCommand(string prompt)
+        private static string[] ReadCommand(string prompt)
         {
             Console.WriteLine();
             Console.Write(prompt);
             string[] command = Console.ReadLine().Trim().Split(" ");
             return command;
         }
-    }
-    class MainClass
-    {
         public static void Main(string[] args)
         {
             string[] command;
@@ -253,7 +280,7 @@
             Todo.PrintHelp();
             do
             {
-                command = MyIO.ReadCommand("> ");
+                command = ReadCommand("> ");
                 switch (command[0])
                 {
                     case "hjälp": Todo.PrintHelp(); break;
